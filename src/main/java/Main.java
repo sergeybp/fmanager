@@ -41,7 +41,7 @@ public class Main implements Runnable {
         MouseListener ml = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (e.isPopupTrigger()) {
+                if (e.isPopupTrigger() || e.getButton() == 3) {
                     tree.setSelectionPath(tree.getPathForLocation(e.getX(), e.getY()));
                     TreePath path = tree.getPathForLocation(e.getX(), e.getY());
                     if (path != null) {
@@ -162,11 +162,14 @@ public class Main implements Runnable {
         dialog.button.addActionListener(e -> {
             String name = dialog.textField.getText();
             if (utils.createFolder(dialog.file, name)) {
-                Node n = new Node(new File(dialog.file, name));
-                n.isDirectory = true;
-                DefaultMutableTreeNode x = new DefaultMutableTreeNode(n);
-                ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).add(x);
-                ((DefaultTreeModel) tree.getModel()).reload(((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()));
+                DefaultMutableTreeNode now = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+                if(((Node)now.getUserObject()).isOpen) {
+                    Node n = new Node(new File(dialog.file, name));
+                    n.isDirectory = true;
+                    DefaultMutableTreeNode x = new DefaultMutableTreeNode(n);
+                    ((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()).add(x);
+                    ((DefaultTreeModel) tree.getModel()).reload(((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent()));
+                }
                 dialog.setVisible(false);
             } else {
                 dialog.dispose();
